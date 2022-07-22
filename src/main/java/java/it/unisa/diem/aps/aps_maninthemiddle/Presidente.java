@@ -9,12 +9,5 @@ package java.it.unisa.diem.aps.aps_maninthemiddle;
  * @author mario
  */
 public class Presidente {
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) {
-        // TODO code application logic here
-    }
     
 }
