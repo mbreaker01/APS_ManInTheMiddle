@@ -44,5 +44,9 @@ public class Elettore {
         this.absenceCount = absenceCount;
     }
     
+    public Scheda vote(Scheda s, Candidato c){
+        s.setVoto(c);
+        return s;
+    }
     
 }
