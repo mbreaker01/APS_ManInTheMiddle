@@ -12,8 +12,7 @@ class Scheda {
     
     private Candidato voto;
 
-    public Scheda(Candidato voto) {
-        this.voto = voto;
+    public Scheda() {
     }
 
     

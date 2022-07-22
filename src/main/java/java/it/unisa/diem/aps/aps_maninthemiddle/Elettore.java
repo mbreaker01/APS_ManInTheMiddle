@@ -10,7 +10,7 @@ import java.it.unisa.diem.aps.aps_maninthemiddle.EnumerationState.State;
  *
  * @author simon
  */
-public class Elettore {
+public class Elettore implements Runnable{
     
     private int ID;
     private State state;
@@ -47,6 +47,12 @@ public class Elettore {
     public Scheda vote(Scheda s, Candidato c){
         s.setVoto(c);
         return s;
+    }
+
+    @Override
+    public void run() {
+        
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }
