@@ -4,6 +4,7 @@
  */
 package java.it.unisa.diem.aps.aps_maninthemiddle;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -19,8 +20,11 @@ public class UfficioComunale {
 
     private static int cnt = 0;
 
-    public UfficioComunale() {
+    public UfficioComunale(int ID, List<Candidato> candidati, List<Elettore> elettori, HashMap<String, String> credenziali) {
         this.ID = cnt++;
+        this.candidati = new ArrayList<Candidato>();
+        this.elettori = new ArrayList<Elettore>();
+        this.credenziali = new HashMap<String, String>();
     }
 
     public List<Candidato> getCandidati() {
@@ -35,4 +39,11 @@ public class UfficioComunale {
         return credenziali;
     }
    
+    public void addCandidato(Candidato c){
+        candidati.add(c);   
+    }
+    
+    public void addElettore(Elettore e){
+        elettori.add(e);
+    }
 }
