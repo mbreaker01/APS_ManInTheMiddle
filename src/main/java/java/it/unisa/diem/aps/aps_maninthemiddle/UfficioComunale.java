@@ -4,6 +4,7 @@
  */
 package java.it.unisa.diem.aps.aps_maninthemiddle;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -12,12 +13,26 @@ import java.util.List;
  */
 public class UfficioComunale {
     private int ID;
-    private List<Candidato> Candidati;
-    
+    private List<Candidato> candidati;
+    private List<Elettore> elettori;
+    private HashMap<String,String> credenziali;
 
     private static int cnt = 0;
 
     public UfficioComunale() {
         this.ID = cnt++;
     }
+
+    public List<Candidato> getCandidati() {
+        return candidati;
+    }
+
+    public List<Elettore> getElettori() {
+        return elettori;
+    }
+
+    public HashMap<String, String> getCredenziali() {
+        return credenziali;
+    }
+   
 }
