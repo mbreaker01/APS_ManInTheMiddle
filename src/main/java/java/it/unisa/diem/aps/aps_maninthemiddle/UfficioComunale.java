@@ -20,11 +20,11 @@ public class UfficioComunale {
 
     private static int cnt = 0;
 
-    public UfficioComunale(int ID, List<Candidato> candidati, List<Elettore> elettori, HashMap<String, String> credenziali) {
+    public UfficioComunale(int ID) {
         this.ID = cnt++;
-        this.candidati = new ArrayList<Candidato>();
-        this.elettori = new ArrayList<Elettore>();
-        this.credenziali = new HashMap<String, String>();
+        this.candidati = new ArrayList<>();
+        this.elettori = new ArrayList<>();
+        this.credenziali = new HashMap<>();
     }
 
     public List<Candidato> getCandidati() {
