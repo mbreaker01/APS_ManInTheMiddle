@@ -3,5 +3,5 @@ module com.mycompany.aps_maninthemiddle {
     requires javafx.fxml;
 
     opens com.mycompany.aps_maninthemiddle to javafx.fxml;
-    exports com.mycompany.aps_maninthemiddle;
+    exports java.it.unisa.diem.aps.aps_maninthemiddle;
 }
