@@ -13,25 +13,19 @@ import java.it.unisa.diem.aps.aps_maninthemiddle.EnumerationState.State;
 public class Elettore {
     
     private int ID;
-    private String pwd;
     private State state;
     private int absenceCount;
 
     private static int cnt = 0;
 
-    public Elettore() {
+    public Elettore(int ID, State state, int absenceCount) {
         this.ID = cnt++;
+        this.state = state;
+        this.absenceCount = absenceCount;
     }
+
     public int getID() {
         return ID;
-    }
-
-    public String getPwd() {
-        return pwd;
-    }
-
-    public void setPwd(String pwd) {
-        this.pwd = pwd;
     }
 
     public State getState() {
