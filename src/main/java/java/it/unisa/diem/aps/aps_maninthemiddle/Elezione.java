@@ -28,14 +28,21 @@ public class Elezione {
         this.allElettori = new ArrayList<>();
         this.allUffici = new ArrayList<>();
         this.mixer = new ArrayList<>();
+        for(UfficioComunale uc : allUffici){
+            for(Candidato c : uc.getCandidati()){
+                allCandidati.add(c);
+            }
+            for(Elettore e : uc.getElettori()){
+                allElettori.add(e);
+            }
+        }
+        
+        
+        
+        
     }
-    
+   
 
-    
-    
-    
-    
-    
     
     
 }
