@@ -27,9 +27,9 @@ public class SSLClientWithClientAuth
 		KeyManagerFactory keyFact = KeyManagerFactory.getInstance("SunX509");
 		KeyStore clientStore = KeyStore.getInstance("JKS");
 
-		clientStore.load(new FileInputStream("keystore.jks"), "changeit".toCharArray());
+		clientStore.load(new FileInputStream("Ekeystore.jks"), "ElettorePass".toCharArray());
 
-		keyFact.init(clientStore, "changeit".toCharArray());
+		keyFact.init(clientStore, "ElettorePass".toCharArray());
 		
 		// create a context and set up a socket factory
 
@@ -48,9 +48,9 @@ public class SSLClientWithClientAuth
         String[] args)
         throws Exception
     {
-		SSLContext       sslContext = createSSLContext(); 
-		SSLSocketFactory fact = sslContext.getSocketFactory(); // create the socket from an SSLContext linked to a specific alias in the keystore - this allows the client to authenticate to the server with the private key corresponding to that alias
-        SSLSocket        cSock = (SSLSocket)fact.createSocket("localhost", 4000);
+		SSLContext sslContext = createSSLContext(); 
+		SSLSocketFactory fact = sslContext.getSocketFactory(); 
+                SSLSocket cSock = (SSLSocket)fact.createSocket("localhost", 4000);
 
  Protocol(cSock);
     }

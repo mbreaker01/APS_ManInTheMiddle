@@ -23,12 +23,10 @@ public class SSLServerWithClientAuth
         String[] args)
         throws Exception
     {
- // this server is identical to SSLServer.java except that it invokes setNeedClientAuth to true
-     	    SSLServerSocketFactory fact = (SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
-        SSLServerSocket        sSock = (SSLServerSocket)fact.createServerSocket(4000);
+     	SSLServerSocketFactory fact = (SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
+        SSLServerSocket  sSock = (SSLServerSocket)fact.createServerSocket(4000);
         while(true){
-        sSock.setNeedClientAuth(true); // this is needed to allow Client Authentication 
-        
+        sSock.setNeedClientAuth(true);       
         SSLSocket sslSock = (SSLSocket)sSock.accept();
         
         Protocol(sslSock);
