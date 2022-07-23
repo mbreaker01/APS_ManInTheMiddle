@@ -7,10 +7,11 @@ def elettore():
     os.system('cmd /c ' + cmd_elettore)
 
 def presidente():
+
     cmd_pres = 'java -Djavax.net.ssl.trustStore=truststore.jks -Djavax.net.ssl.trustStorePassword=changeit PresidenteMain.java'
     os.system('cmd /c ' + cmd_pres)
 
-project_dir = 'src/main/java/java/it/unisa/diem/aps/aps_maninthemiddle'
+project_dir = 'src/main/java/it/unisa/diem/aps/aps_maninthemiddle'
 os.chdir(project_dir)
 print(os.listdir())
 

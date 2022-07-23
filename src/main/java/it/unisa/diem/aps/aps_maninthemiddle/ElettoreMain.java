@@ -4,6 +4,7 @@
  */
 package it.unisa.diem.aps.aps_maninthemiddle;
 
+import static it.unisa.diem.aps.aps_maninthemiddle.Utils.toByteArray;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -34,7 +35,7 @@ public class ElettoreMain {
        // The server sends back the string received to the Client, so the Server will send to the Client the string "Client" and the Client prints it
        // so in the end the Client will print ServerClient
        // The protocol is stupid and serves only to demonstrate how to read and write on secure sockets
-        out.write(Utils.toByteArray(eStr));
+        out.write(toByteArray(eStr));
         
         int ch = 0;
         while ((ch = in.read()) != '\n')
