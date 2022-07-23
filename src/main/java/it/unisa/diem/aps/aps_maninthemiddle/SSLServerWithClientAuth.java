@@ -24,7 +24,7 @@ public class SSLServerWithClientAuth
         throws Exception
     {
      	SSLServerSocketFactory fact = (SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
-        SSLServerSocket  sSock = (SSLServerSocket)fact.createServerSocket(4000);
+        SSLServerSocket  sSock = (SSLServerSocket)fact.createServerSocket(4001);
         while(true){
         sSock.setNeedClientAuth(true);       
         SSLSocket sslSock = (SSLSocket)sSock.accept();

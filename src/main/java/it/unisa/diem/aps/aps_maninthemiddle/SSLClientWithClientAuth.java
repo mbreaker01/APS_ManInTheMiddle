@@ -48,11 +48,11 @@ public class SSLClientWithClientAuth
         String[] args)
         throws Exception
     {
-		SSLContext sslContext = createSSLContext(); 
-		SSLSocketFactory fact = sslContext.getSocketFactory(); 
-                SSLSocket cSock = (SSLSocket)fact.createSocket("localhost", 4000);
+        SSLContext sslContext = createSSLContext(); 
+        SSLSocketFactory fact = sslContext.getSocketFactory(); 
+        SSLSocket cSock = (SSLSocket)fact.createSocket("localhost", 4001);
 
- Protocol(cSock);
+        Protocol(cSock);
     }
 }
 
