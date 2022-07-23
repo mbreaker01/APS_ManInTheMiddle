@@ -1,4 +1,4 @@
-package java.it.unisa.diem.aps.aps_maninthemiddle;
+package it.unisa.diem.aps.aps_maninthemiddle;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -7,7 +7,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import static java.it.unisa.diem.aps.aps_maninthemiddle.EnumerationState.State.ENABLED;
+import static it.unisa.diem.aps.aps_maninthemiddle.EnumerationState.State.ENABLED;
 
 /**
  * JavaFX App

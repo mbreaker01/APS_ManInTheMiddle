@@ -1,4 +1,4 @@
-package java.it.unisa.diem.aps.aps_maninthemiddle;
+package it.unisa.diem.aps.aps_maninthemiddle;
 
 import java.io.IOException;
 import javafx.fxml.FXML;
