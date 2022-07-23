@@ -13,8 +13,7 @@ import javax.net.ssl.SSLServerSocketFactory;
 import java.util.concurrent.TimeUnit;
 
 
-public class SSLServerWithClientAuth
-    extends SSLServer
+public class SSLServerWithClientAuth extends SSLServer
 {
 
 
