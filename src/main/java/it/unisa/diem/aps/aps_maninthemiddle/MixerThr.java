@@ -57,9 +57,6 @@ public class MixerThr {
         InputStream in = sSock.getInputStream();
         OutputStream out = sSock.getOutputStream();
         
-        System.out.println(sSock.getLocalSocketAddress());
-        System.out.println(sSock.getRemoteSocketAddress());
-        
         int ch = 0;
         int i = 0;
         char[] msg = new char[20];
