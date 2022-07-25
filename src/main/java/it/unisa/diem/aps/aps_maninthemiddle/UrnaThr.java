@@ -4,11 +4,9 @@
  */
 package it.unisa.diem.aps.aps_maninthemiddle;
 
-import static it.unisa.diem.aps.aps_maninthemiddle.SSLClient.Protocol;
-import static it.unisa.diem.aps.aps_maninthemiddle.SSLClient.s;
-import static it.unisa.diem.aps.aps_maninthemiddle.SSLClientWithClientAuth.createSSLContext;
-import static it.unisa.diem.aps.aps_maninthemiddle.SSLServer.Protocol;
-import static it.unisa.diem.aps.aps_maninthemiddle.SSLServer.s;
+import static it.unisa.diem.aps.aps_maninthemiddle.MixerThr.clientProtocol;
+import static it.unisa.diem.aps.aps_maninthemiddle.MixerThr.createSSLContext;
+import static it.unisa.diem.aps.aps_maninthemiddle.MixerThr.serverProtocol;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -26,30 +24,22 @@ import javax.net.ssl.SSLSocketFactory;
  *
  * @author giuseppe
  */
-public class PresidenteThr extends SSLServer{
-
+public class UrnaThr {
+    
     static SSLContext createSSLContext() throws Exception{
         KeyManagerFactory keyFact = KeyManagerFactory.getInstance("SunX509");
         KeyStore clientStore = KeyStore.getInstance("JKS");
 
-        clientStore.load(new FileInputStream("Pkeystore.jks"), "PresidentePass".toCharArray());
+        clientStore.load(new FileInputStream("Ukeystore.jks"), "UrnaPass".toCharArray());
 
-        keyFact.init(clientStore, "PresidentePass".toCharArray());
+        keyFact.init(clientStore, "UrnaPass".toCharArray());
 
         SSLContext sslContext = SSLContext.getInstance("TLS"); 
         sslContext.init(keyFact.getKeyManagers(), null, null);
 		
         return sslContext;
-    }    
-    
-    static void clientProtocol(Socket cSock, String msg) throws Exception{
-        OutputStream     out = cSock.getOutputStream();
-        InputStream      in = cSock.getInputStream();
-        out.write(Utils.toByteArray(msg));
-        
-        System.out.println("Presidente's connection ended");
     }
-    
+
     static String serverProtocol(Socket sSock) throws Exception{
         System.out.println("session started.");
         
@@ -78,25 +68,29 @@ public class PresidenteThr extends SSLServer{
         
     }
     
-
+    static void clientProtocol(Socket cSock, String msg) throws Exception{
+        OutputStream     out = cSock.getOutputStream();
+        InputStream      in = cSock.getInputStream();
+        out.write(Utils.toByteArray(msg));
+        
+        System.out.println("Urna's connection ended");
+    }
 
     public static void main(String[] args) throws Exception{
         if(args.length != 2){
             System.err.println("Numero di parametri errato");
             return;
         }
+        
      	SSLServerSocketFactory fact = (SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
         SSLServerSocket  sSock = (SSLServerSocket)fact.createServerSocket(Integer.valueOf(args[0]));
-        PresUrnaThread puthr = new PresUrnaThread();
-        Thread thr1 = new Thread(puthr);
-        thr1.start();
         while(true){
-            sSock.setNeedClientAuth(true);
+            sSock.setNeedClientAuth(true);       
             SSLSocket sslSock = (SSLSocket)sSock.accept();
 
             String msg = serverProtocol(sslSock);
             
-            //starting comunication with mixer1
+                    //starting comunication with mixer1
             SSLContext sslContext = createSSLContext(); 
             SSLSocketFactory fact1 = sslContext.getSocketFactory(); 
             SSLSocket cSock = (SSLSocket)fact1.createSocket("localhost", Integer.valueOf(args[1]));

@@ -45,10 +45,14 @@ public class ElettoreThr {
     
     public static void main(String[] args) throws Exception
     {
+        if(args.length != 1){
+            System.err.println("Numero di parametri errato");
+            return;
+        }
         
         SSLContext sslContext = createSSLContext(); 
         SSLSocketFactory fact = sslContext.getSocketFactory(); 
-        SSLSocket cSock = (SSLSocket)fact.createSocket("localhost", 4000);
+        SSLSocket cSock = (SSLSocket)fact.createSocket("localhost", Integer.valueOf(args[0]));
 
         clientProtocol(cSock, "ciao\n");
         //while (true){
