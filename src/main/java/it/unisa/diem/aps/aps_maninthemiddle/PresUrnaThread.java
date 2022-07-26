@@ -58,6 +58,7 @@ public class PresUrnaThread implements Runnable{
                 while(true){
                     sSock.setNeedClientAuth(true);
                     SSLSocket sslSock = (SSLSocket)sSock.accept();
+
                     
                     server2Protocol(sslSock);
                 }

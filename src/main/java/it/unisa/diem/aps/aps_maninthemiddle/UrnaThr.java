@@ -82,14 +82,14 @@ public class UrnaThr {
      	SSLServerSocketFactory fact = (SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
         SSLServerSocket  sSock = (SSLServerSocket)fact.createServerSocket(Integer.valueOf(args[0]));
         while(true){
-            sSock.setNeedClientAuth(true);       
+            sSock.setNeedClientAuth(true);
             SSLSocket sslSock = (SSLSocket)sSock.accept();
 
             String msg = serverProtocol(sslSock);
             
                     //starting comunication with mixer1
-            SSLContext sslContext = createSSLContext(); 
-            SSLSocketFactory fact1 = sslContext.getSocketFactory(); 
+            SSLContext sslContext = createSSLContext();
+            SSLSocketFactory fact1 = sslContext.getSocketFactory();
             SSLSocket cSock = (SSLSocket)fact1.createSocket("localhost", Integer.valueOf(args[1]));
 
             clientProtocol(cSock, msg);

@@ -4,12 +4,20 @@
  */
 package it.unisa.diem.aps.aps_maninthemiddle;
 
+import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.EncryptInTheExponent;
+import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.Homomorphism;
 import static it.unisa.diem.aps.aps_maninthemiddle.PresidenteThr.clientProtocol;
 import static it.unisa.diem.aps.aps_maninthemiddle.PresidenteThr.createSSLContext;
 import static it.unisa.diem.aps.aps_maninthemiddle.PresidenteThr.serverProtocol;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.net.Socket;
 import java.security.KeyStore;
 import java.util.concurrent.TimeUnit;
@@ -51,28 +59,34 @@ public class MixerThr {
         System.out.println("Mixer's connection ended");
     }
     
-    static String serverProtocol(Socket sSock) throws Exception{
+    static byte[] serverProtocol(Socket sSock) throws Exception{
         System.out.println("session started.");
         
         InputStream in = sSock.getInputStream();
         OutputStream out = sSock.getOutputStream();
-        
-        int ch = 0;
-        int i = 0;
-        char[] msg = new char[20];
-        while ((ch = in.read()) != '\n'){
-            System.out.print((char)ch);
-            msg[i] = (char)ch;
-            i++;
-            TimeUnit.SECONDS.sleep(1);
-            }
-        msg[i]='\n';
-        System.out.println((char)ch);
+       byte[] input = in.readAllBytes();
+            ElGamalCT CT;
+            ByteArrayInputStream bos = new ByteArrayInputStream(input);
+            ObjectInputStream oos = new ObjectInputStream(bos);
+            CT =(ElGamalCT)oos.readObject();
+            BigInteger M1=new BigInteger("0");
+            ObjectInputStream inputF;
+            inputF = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\PublicKeys.txt")));
+            ElGamalPK PK = (ElGamalPK)inputF.readObject();
+            ElGamalCT CT1=EncryptInTheExponent(PK,M1); 
+            ElGamalCT CTH=Homomorphism(PK,CT1,CT);
+            System.out.println(CTH.C);
+            System.out.println(CTH.C2);
+            ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
+            ObjectOutputStream oos1 = new ObjectOutputStream(bos1);
+            oos1.writeObject(CTH);
+            oos1.flush();
+            byte [] CTSend = bos1.toByteArray();
+            
         sSock.close(); // close connection
         System.out.println("session closed.");
+        return CTSend;
         
-        
-        return String.valueOf(msg);
         
     }
 
@@ -87,15 +101,15 @@ public class MixerThr {
         while(true){
             sSock.setNeedClientAuth(true);       
             SSLSocket sslSock = (SSLSocket)sSock.accept();
-
-            String msg = serverProtocol(sslSock);
+            byte[] B=serverProtocol(sslSock);
+            
             
                     //starting comunication with mixer1
-            SSLContext sslContext = createSSLContext(args[2]); 
-            SSLSocketFactory fact1 = sslContext.getSocketFactory(); 
-            SSLSocket cSock = (SSLSocket)fact1.createSocket("localhost", Integer.valueOf(args[1]));
+            //SSLContext sslContext = createSSLContext(args[2]); 
+            //SSLSocketFactory fact1 = sslContext.getSocketFactory(); 
+            //SSLSocket cSock = (SSLSocket)fact1.createSocket("localhost", Integer.valueOf(args[1]));
 
-            clientProtocol(cSock, msg);
+           // clientProtocol(cSock, msg);
         }
     }
     

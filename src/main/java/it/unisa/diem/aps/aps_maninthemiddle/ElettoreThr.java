@@ -4,12 +4,24 @@
  */
 package it.unisa.diem.aps.aps_maninthemiddle;
 
+import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.Encrypt;
 import static it.unisa.diem.aps.aps_maninthemiddle.SSLClient.Protocol;
+import static it.unisa.diem.aps.aps_maninthemiddle.ThresholdElGamal.SetupParameters;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.math.BigInteger;
 import java.net.Socket;
 import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import javax.crypto.NoSuchPaddingException;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocket;
@@ -21,40 +33,64 @@ import javax.net.ssl.SSLSocketFactory;
  */
 public class ElettoreThr {
 
-    static SSLContext createSSLContext() throws Exception{
+    static SSLContext createSSLContext(String n) throws Exception{
         KeyManagerFactory keyFact = KeyManagerFactory.getInstance("SunX509");
         KeyStore clientStore = KeyStore.getInstance("JKS");
+        
+        String store = "E" + n + "keystore.jks";
+        String pass = "Elettore" + n + "Pass";
+        
+        clientStore.load(new FileInputStream(store), pass.toCharArray());
 
-        clientStore.load(new FileInputStream("Ekeystore.jks"), "ElettorePass".toCharArray());
-
-        keyFact.init(clientStore, "ElettorePass".toCharArray());
+        keyFact.init(clientStore, pass.toCharArray());
 
         SSLContext sslContext = SSLContext.getInstance("TLS"); 
-	sslContext.init(keyFact.getKeyManagers(), null, null);
+        sslContext.init(keyFact.getKeyManagers(), null, null);
 		
         return sslContext;
-    }
+    }   
     
-    static void clientProtocol(Socket cSock, String msg) throws Exception{
+    static void votoProtocol(Socket cSock, Scheda scheda) throws Exception {
         OutputStream     out = cSock.getOutputStream();
-        InputStream      in = cSock.getInputStream();
-        out.write(Utils.toByteArray(msg));
+        
+        ElGamalSK Params=SetupParameters(512);
+        
+        ObjectInputStream input;
+
+        input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\PublicKeys.txt")));
+        ElGamalPK PK = (ElGamalPK)input.readObject();
+
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(bos);
+        oos.writeObject(scheda);
+        oos.flush();
+        byte [] schedaByte = bos.toByteArray();
+        ElGamalCT CT=Encrypt(PK,new BigInteger(schedaByte));
+        ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
+        ObjectOutputStream oos1 = new ObjectOutputStream(bos1);
+        oos1.writeObject(CT);
+        oos1.flush();
+        byte [] CTSend = bos1.toByteArray();
+        out.write(CTSend);
         
         System.out.println("Elettore's connection ended");
     }
     
     public static void main(String[] args) throws Exception
     {
-        if(args.length != 1){
+        if(args.length != 3){
             System.err.println("Numero di parametri errato");
             return;
         }
         
-        SSLContext sslContext = createSSLContext(); 
+        Scheda scheda = new Scheda();
+        scheda.setVoto(args[2]);
+        
+        SSLContext sslContext = createSSLContext(args[1]); 
         SSLSocketFactory fact = sslContext.getSocketFactory(); 
         SSLSocket cSock = (SSLSocket)fact.createSocket("localhost", Integer.valueOf(args[0]));
 
-        clientProtocol(cSock, "ciao\n");
+        votoProtocol(cSock, scheda);
         //while (true){
         //}
     }
