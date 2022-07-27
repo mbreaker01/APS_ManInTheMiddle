@@ -100,7 +100,7 @@ public class MixerThr {
             
             BigInteger M1=new BigInteger("0");
             ObjectInputStream inputF;
-            inputF = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\mario\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\PublicKeys.txt")));
+            inputF = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\PublicKeys.txt")));
             ElGamalPK PK = (ElGamalPK)inputF.readObject();
             ElGamalCT CT1=EncryptInTheExponent(PK,M1); 
             ElGamalCT CTH=Homomorphism(PK,CT1,CT);

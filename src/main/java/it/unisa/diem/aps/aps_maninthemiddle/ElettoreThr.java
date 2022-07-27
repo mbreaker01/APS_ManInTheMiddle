@@ -19,9 +19,11 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.util.Arrays;
 import javax.crypto.NoSuchPaddingException;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -58,14 +60,12 @@ public class ElettoreThr {
         
         ObjectInputStream input;
 
-        input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\mario\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\PublicKeys.txt")));
+        input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\PublicKeys.txt")));
         ElGamalPK PK = (ElGamalPK)input.readObject();
         
         ElGamalCT CT=EncryptInTheExponent(PK,new BigInteger(voto));
-        out.write(CT.C.toByteArray());
-        out.write('\n');
-        out.write(CT.C2.toByteArray());
-        out.write('\n');
+
+        out.write((CT.C.toString() + "\n" + CT.C2.toString() + "\n").getBytes());
         
         System.out.println("Elettore's connection ended");
     }
@@ -84,7 +84,6 @@ public class ElettoreThr {
         SSLSocket cSock = (SSLSocket)fact.createSocket("localhost", Integer.valueOf(args[0]));
 
         votoProtocol(cSock, voto);
-        //while (true){
-        //}
+
     }
 }
