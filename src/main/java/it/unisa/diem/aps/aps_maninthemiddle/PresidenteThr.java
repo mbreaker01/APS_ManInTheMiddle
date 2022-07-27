@@ -6,6 +6,8 @@ package it.unisa.diem.aps.aps_maninthemiddle;
 
 import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.EncryptInTheExponent;
 import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.Homomorphism;
+import static it.unisa.diem.aps.aps_maninthemiddle.MixerThr.readCharFromIn;
+import static it.unisa.diem.aps.aps_maninthemiddle.MixerThr.readIntFromIn;
 import static it.unisa.diem.aps.aps_maninthemiddle.SSLClient.Protocol;
 import static it.unisa.diem.aps.aps_maninthemiddle.SSLClient.s;
 import static it.unisa.diem.aps.aps_maninthemiddle.SSLClientWithClientAuth.createSSLContext;
@@ -129,13 +131,14 @@ public class PresidenteThr extends SSLServer{
                 CT= elettoreProtocol(sslSock, certName);
                 pending.add(certName);
                 CTList.add(CT);
-                if(pending.size()>5){
+                if(pending.size()>0){
                     SSLContext sslContext = createSSLContext(); 
                     SSLSocketFactory fact1 = sslContext.getSocketFactory(); 
                     SSLSocket cSock = (SSLSocket)fact1.createSocket("localhost", Integer.valueOf(args[1]));
                     Collections.shuffle(CTList);
                     mixerProtocol(cSock,CTList,pending);
                     pending.clear();
+                    CTList.clear();
                 }
             }
             
@@ -143,12 +146,42 @@ public class PresidenteThr extends SSLServer{
            
         }
     }
-
-    private static ArrayList<String> urnaProtocol(SSLSocket sslSock) {
+    
+    static String readIntFromIn(InputStream in, char end) throws IOException{
+        int ch = 0;
+        String c = "";
         
+        while ((ch = in.read()) != end){
+            c = c.concat(String.valueOf( ch-48 ));
+        }
+        return c;
+    }
+    
+    static String readCharFromIn(InputStream in, char end) throws IOException{
+        int ch = 0;
+        String c = "";
+        
+        while ((ch = in.read()) != end){
+            c = c.concat(Character.toString((char)ch));
+        }
+        return c;
+    }
+
+    private static ArrayList<String> urnaProtocol(SSLSocket sslSock) throws IOException {
+        System.out.println("session started.");
+        
+        InputStream in = sslSock.getInputStream();
+
+        int len = Integer.valueOf(readIntFromIn(in, '\n'));
+        
+        ArrayList<String> eList = new ArrayList<>();
+        
+        for(int i=0; i<len; i++){
+            eList.add(readCharFromIn(in, '\n'));
+        }
         
 
-        return null;
+        return eList;
         
         
 

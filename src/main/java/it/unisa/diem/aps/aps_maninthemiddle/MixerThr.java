@@ -23,6 +23,7 @@ import java.math.BigInteger;
 import java.net.Socket;
 import java.security.KeyStore;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -36,6 +37,11 @@ import javax.net.ssl.SSLSocketFactory;
  * @author giuseppe
  */
 public class MixerThr {
+    
+    private static ArrayList<String> eList;
+    private static ArrayList<ElGamalCT> CTList;
+
+
     
     static SSLContext createSSLContext(String n) throws Exception{
         KeyManagerFactory keyFact = KeyManagerFactory.getInstance("SunX509");
@@ -54,123 +60,72 @@ public class MixerThr {
         return sslContext;
     }    
     
-    static void clientProtocol(Socket cSock, String msg) throws Exception{
+    static void clientProtocol(Socket cSock) throws Exception{
         OutputStream     out = cSock.getOutputStream();
-        InputStream      in = cSock.getInputStream();
-        out.write(Utils.toByteArray(msg));
-        
+        String output=eList.size() + "\n";
+        for(String el: eList){
+            output = output.concat(el + "\n");
+        }
+        for(ElGamalCT cipher: CTList){
+            output = output.concat(cipher.C.toString() + "\n" + cipher.C2.toString() + "\n");
+        }
+        out.write(output.getBytes());
         System.out.println("Mixer's connection ended");
     }
     
-    static String readFromIn(InputStream in, char end) throws IOException{
+    static String readIntFromIn(InputStream in, char end) throws IOException{
         int ch = 0;
         String c = "";
         
         while ((ch = in.read()) != end){
             c = c.concat(String.valueOf( ch-48 ));
         }
-        
         return c;
     }
     
+    static String readCharFromIn(InputStream in, char end) throws IOException{
+        int ch = 0;
+        String c = "";
+        
+        while ((ch = in.read()) != end){
+            c = c.concat(Character.toString((char)ch));
+        }
+        return c;
+    }
     
-    static byte[] serverProtocol(Socket sSock) throws Exception{
+    static void serverProtocol(Socket sSock) throws Exception{
         System.out.println("session started.");
         
         InputStream in = sSock.getInputStream();
 
-        int len = Integer.getInteger(readFromIn(in, '\n'));
-        
-        ArrayList<String> eList = new ArrayList<>();
-
+        int len = Integer.valueOf(readIntFromIn(in, '\n'));
         
         for(int i=0; i<len; i++){
-            eList.add(readFromIn(in, '\n'));     
+            eList.add(readCharFromIn(in, '\n'));
         }
         
-        
-        
-        
+        ObjectInputStream input;
 
-        String c = "";
-        String c2 = "";
-
-        while ((ch = in.read()) != '\n'){
-            c = c.concat(String.valueOf(ch-48));
-        }
-
-        while ((ch = in.read()) != '\n'){
-            c2 = c2.concat(String.valueOf(ch-48));
-        }
-
-        BigInteger C = new BigInteger(c);
-        BigInteger C2 = new BigInteger(c2);
-
-        ElGamalCT CT = new ElGamalCT(C,C2);
-
-        System.out.println(CT.C);
-        System.out.println(CT.C2);
-        sslSock.close();
-        return CT;
+        input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\PublicKeys.txt")));
+        ElGamalPK PK = (ElGamalPK)input.readObject();
         
-        
-        
-        
-        
-        
-        InputStream in = sSock.getInputStream();
-        OutputStream out = sSock.getOutputStream();
-        
-        ElGamalSK Params=SetupParameters(512);
-        
-       byte[] input = in.readAllBytes();
+        for(int i=0; i<len; i++){
+            BigInteger C = new BigInteger(readIntFromIn(in, '\n'));
+            BigInteger C2 = new BigInteger(readIntFromIn(in, '\n'));
             
-            int ch = 0;
-            int i = 0;
-            char[] msg = new char[2048];
-            while ((ch = in.read()) != '\n'){
-            System.out.print((char)ch);
-            msg[i] = (char)ch;
-            i++;
-            TimeUnit.SECONDS.sleep(1);
-            }
-            String Smsg=String.valueOf(msg);
-            BigInteger C =new BigInteger(Smsg);
-            
-            ch = 0;
-            i = 0;
-            char[] msg1 = new char[2048];
-            while ((ch = in.read()) != '\n'){
-            System.out.print((char)ch);
-            msg1[i] = (char)ch;
-            i++;
-            TimeUnit.SECONDS.sleep(1);
-            }
-            String Smsg1=String.valueOf(msg1);
-            BigInteger C2 =new BigInteger(Smsg1);
             ElGamalCT CT = new ElGamalCT(C,C2);
             
-            System.out.println(CT.C);
-            System.out.println(CT.C2);
-            
             BigInteger M1=new BigInteger("0");
-            ObjectInputStream inputF;
-            inputF = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\PublicKeys.txt")));
-            ElGamalPK PK = (ElGamalPK)inputF.readObject();
             ElGamalCT CT1=EncryptInTheExponent(PK,M1); 
             ElGamalCT CTH=Homomorphism(PK,CT1,CT);
-            System.out.println(CTH.C);
-            System.out.println(CTH.C2);
-            ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
-            ObjectOutputStream oos1 = new ObjectOutputStream(bos1);
-            oos1.writeObject(CTH);
-            oos1.flush();
-            byte [] CTSend = bos1.toByteArray();
             
+            CTList.add(CTH);
+        }
+        
+        Collections.shuffle(CTList);
+        
         sSock.close(); // close connection
         System.out.println("session closed.");
-        return CTSend;
-        
         
     }
 
@@ -180,20 +135,25 @@ public class MixerThr {
             return;
         }
         
+        eList = new ArrayList<String>();
+        CTList = new ArrayList<ElGamalCT>();
+        
      	SSLServerSocketFactory fact = (SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
         SSLServerSocket  sSock = (SSLServerSocket)fact.createServerSocket(Integer.valueOf(args[0]));
         while(true){
             sSock.setNeedClientAuth(true);       
             SSLSocket sslSock = (SSLSocket)sSock.accept();
-            byte[] B=serverProtocol(sslSock);
+            serverProtocol(sslSock);
             
+            //starting comunication with mixer1
+            SSLContext sslContext = createSSLContext(args[2]); 
+            SSLSocketFactory fact1 = sslContext.getSocketFactory(); 
+            SSLSocket cSock = (SSLSocket)fact1.createSocket("localhost", Integer.valueOf(args[1]));
+            clientProtocol(cSock);
             
-                    //starting comunication with mixer1
-            //SSLContext sslContext = createSSLContext(args[2]); 
-            //SSLSocketFactory fact1 = sslContext.getSocketFactory(); 
-            //SSLSocket cSock = (SSLSocket)fact1.createSocket("localhost", Integer.valueOf(args[1]));
+            eList.clear();
+            CTList.clear();
 
-           // clientProtocol(cSock, msg);
         }
     }
     
