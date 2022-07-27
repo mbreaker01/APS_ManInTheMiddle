@@ -4,6 +4,8 @@
  */
 package it.unisa.diem.aps.aps_maninthemiddle;
 
+import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.Decrypt;
+import static it.unisa.diem.aps.aps_maninthemiddle.ThresholdElGamal.PartialDecrypt;
 import static it.unisa.diem.aps.aps_maninthemiddle.UrnaThr.readCharFromIn;
 import static it.unisa.diem.aps.aps_maninthemiddle.UrnaThr.readIntFromIn;
 import java.io.BufferedInputStream;
@@ -35,9 +37,10 @@ public class ScrutinatoreThr {
         
         ElGamalCT elGamal;
         
+        ObjectInputStream input;
         
         try {
-            ObjectInputStream input = new ObjectInputStream(new BufferedInputStream( new FileInputStream( path)));
+            input = new ObjectInputStream(new BufferedInputStream(new FileInputStream(path)));
             
             while((elGamal = (ElGamalCT) input.readObject()) != null){
                 votes.add(elGamal);
@@ -57,13 +60,31 @@ public class ScrutinatoreThr {
         String path = "C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\Urna.txt";
         ArrayList<ElGamalCT> votes = readVotes(path);
         
-        for (ElGamalCT vote: votes){
+        ElGamalSK []SK=new ElGamalSK[4];
+        
+        ObjectInputStream input;
+
+        input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\M0Keys.txt")));
+        SK[0] = (ElGamalSK)input.readObject();
+        
+        input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\M1Keys.txt")));
+        SK[1] = (ElGamalSK)input.readObject();
+        
+        input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\M2Keys.txt")));
+        SK[2] = (ElGamalSK)input.readObject();
+        
+        input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\SKeys.txt")));
+        SK[3] = (ElGamalSK)input.readObject();
+        
+        for(ElGamalCT vote: votes){
             //decrypt
+            for (int i=0;i<3;i++){
+                vote=PartialDecrypt(vote,SK[i]);
+                i++;
+            }
+            BigInteger res=Decrypt(vote,SK[3]);
+            System.out.println(res);
         }
-        
-        
-        
-        
         
     }
     
