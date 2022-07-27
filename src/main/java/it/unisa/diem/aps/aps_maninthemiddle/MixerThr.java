@@ -14,6 +14,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -21,6 +22,7 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.security.KeyStore;
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -60,8 +62,61 @@ public class MixerThr {
         System.out.println("Mixer's connection ended");
     }
     
+    static String readFromIn(InputStream in, char end) throws IOException{
+        int ch = 0;
+        String c = "";
+        
+        while ((ch = in.read()) != end){
+            c = c.concat(String.valueOf( ch-48 ));
+        }
+        
+        return c;
+    }
+    
+    
     static byte[] serverProtocol(Socket sSock) throws Exception{
         System.out.println("session started.");
+        
+        InputStream in = sSock.getInputStream();
+
+        int len = Integer.getInteger(readFromIn(in, '\n'));
+        
+        ArrayList<String> eList = new ArrayList<>();
+
+        
+        for(int i=0; i<len; i++){
+            eList.add(readFromIn(in, '\n'));     
+        }
+        
+        
+        
+        
+
+        String c = "";
+        String c2 = "";
+
+        while ((ch = in.read()) != '\n'){
+            c = c.concat(String.valueOf(ch-48));
+        }
+
+        while ((ch = in.read()) != '\n'){
+            c2 = c2.concat(String.valueOf(ch-48));
+        }
+
+        BigInteger C = new BigInteger(c);
+        BigInteger C2 = new BigInteger(c2);
+
+        ElGamalCT CT = new ElGamalCT(C,C2);
+
+        System.out.println(CT.C);
+        System.out.println(CT.C2);
+        sslSock.close();
+        return CT;
+        
+        
+        
+        
+        
         
         InputStream in = sSock.getInputStream();
         OutputStream out = sSock.getOutputStream();
