@@ -9,6 +9,7 @@ import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.Homomorphism;
 import static it.unisa.diem.aps.aps_maninthemiddle.PresidenteThr.clientProtocol;
 import static it.unisa.diem.aps.aps_maninthemiddle.PresidenteThr.createSSLContext;
 import static it.unisa.diem.aps.aps_maninthemiddle.PresidenteThr.serverProtocol;
+import static it.unisa.diem.aps.aps_maninthemiddle.ThresholdElGamal.SetupParameters;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -64,14 +65,42 @@ public class MixerThr {
         
         InputStream in = sSock.getInputStream();
         OutputStream out = sSock.getOutputStream();
+        
+        ElGamalSK Params=SetupParameters(512);
+        
        byte[] input = in.readAllBytes();
-            ElGamalCT CT;
-            ByteArrayInputStream bos = new ByteArrayInputStream(input);
-            ObjectInputStream oos = new ObjectInputStream(bos);
-            CT =(ElGamalCT)oos.readObject();
+            
+            int ch = 0;
+            int i = 0;
+            char[] msg = new char[2048];
+            while ((ch = in.read()) != '\n'){
+            System.out.print((char)ch);
+            msg[i] = (char)ch;
+            i++;
+            TimeUnit.SECONDS.sleep(1);
+            }
+            String Smsg=String.valueOf(msg);
+            BigInteger C =new BigInteger(Smsg);
+            
+            ch = 0;
+            i = 0;
+            char[] msg1 = new char[2048];
+            while ((ch = in.read()) != '\n'){
+            System.out.print((char)ch);
+            msg1[i] = (char)ch;
+            i++;
+            TimeUnit.SECONDS.sleep(1);
+            }
+            String Smsg1=String.valueOf(msg1);
+            BigInteger C2 =new BigInteger(Smsg1);
+            ElGamalCT CT = new ElGamalCT(C,C2);
+            
+            System.out.println(CT.C);
+            System.out.println(CT.C2);
+            
             BigInteger M1=new BigInteger("0");
             ObjectInputStream inputF;
-            inputF = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\PublicKeys.txt")));
+            inputF = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\mario\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\PublicKeys.txt")));
             ElGamalPK PK = (ElGamalPK)inputF.readObject();
             ElGamalCT CT1=EncryptInTheExponent(PK,M1); 
             ElGamalCT CTH=Homomorphism(PK,CT1,CT);

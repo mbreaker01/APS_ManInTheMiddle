@@ -128,8 +128,6 @@ ElGamalPK []PartialPK=new ElGamalPK[3];
           ElGamalPK PK= AggregatePartialPublicKeys(PartialPK); 
 // from the 3 partial public-keys SK[i].PK=h_i compute
 // the general public-key PK=\prod_{i=1}^3 h_i=h
-	  
-	  
 	  BigInteger M;
 	  M=new BigInteger(Params.PK.securityparameter,sc); 
 	  

@@ -109,17 +109,17 @@ public class PresidenteThr extends SSLServer{
             sSock.setNeedClientAuth(true);
             SSLSocket sslSock = (SSLSocket)sSock.accept();
             String certName = sslSock.getSession().getPeerPrincipal().getName();
-            byte[] B;
+            ElGamalCT CT;
             if(certName.compareTo("CN=Urna") == 0){
                 urnaProtocol(sslSock);
             }
             else{
-            B= elettoreProtocol(sslSock, certName);
+            CT= elettoreProtocol(sslSock, certName);
             SSLContext sslContext = createSSLContext(); 
             SSLSocketFactory fact1 = sslContext.getSocketFactory(); 
             SSLSocket cSock = (SSLSocket)fact1.createSocket("localhost", Integer.valueOf(args[1]));
 
-            mixerProtocol(cSock,B);
+            mixerProtocol(cSock,CT);
             }
             
             //starting comunication with mixer1
@@ -133,22 +133,53 @@ public class PresidenteThr extends SSLServer{
 
     }
 
-    private static byte[] elettoreProtocol(SSLSocket sslSock, String certName) throws IOException, ClassNotFoundException {
+    private static ElGamalCT elettoreProtocol(SSLSocket sslSock, String certName) throws IOException, ClassNotFoundException, InterruptedException {
         if(votanti.containsKey(certName) && votanti.get(certName).compareTo("no")==0){
             InputStream in = sslSock.getInputStream();
            
             votanti.put(certName, "attesa");
+            int ch = 0;
+            int i = 0;
+            char[] msg = new char[2048];
+            while ((ch = in.read()) != '\n'){
+            System.out.print((char)ch);
+            msg[i] = (char)ch;
+            i++;
+            TimeUnit.SECONDS.sleep(1);
+            }
+            String Smsg=String.valueOf(msg);
+            BigInteger C =new BigInteger(Smsg);
+            
+            ch = 0;
+            i = 0;
+            char[] msg1 = new char[2048];
+            while ((ch = in.read()) != '\n'){
+            System.out.print((char)ch);
+            msg1[i] = (char)ch;
+            i++;
+            TimeUnit.SECONDS.sleep(1);
+            }
+            String Smsg1=String.valueOf(msg1);
+            BigInteger C2 =new BigInteger(Smsg1);
+            ElGamalCT CT = new ElGamalCT(C,C2);
+            
+            System.out.println(CT.C);
+            System.out.println(CT.C2);
+            
+            System.out.println("nell'if");
             sslSock.close();
-            return in.readAllBytes();
+            return CT;
             
         }
         return null;
     }
 
-    private static void mixerProtocol(SSLSocket cSock,byte[] B) throws IOException {
+    private static void mixerProtocol(SSLSocket cSock,ElGamalCT CT) throws IOException {
          OutputStream     out = cSock.getOutputStream();
-        out.write(B);
-        
+        out.write(CT.C.toByteArray());
+        out.write('\n');
+        out.write(CT.C2.toByteArray());
+        out.write('\n');
         System.out.println("Presidente's connection ended");
         
     

@@ -5,6 +5,7 @@
 package it.unisa.diem.aps.aps_maninthemiddle;
 
 import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.Encrypt;
+import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.EncryptInTheExponent;
 import static it.unisa.diem.aps.aps_maninthemiddle.SSLClient.Protocol;
 import static it.unisa.diem.aps.aps_maninthemiddle.ThresholdElGamal.SetupParameters;
 import java.io.BufferedInputStream;
@@ -50,28 +51,21 @@ public class ElettoreThr {
         return sslContext;
     }   
     
-    static void votoProtocol(Socket cSock, Scheda scheda) throws Exception {
+    static void votoProtocol(Socket cSock, String voto) throws Exception {
         OutputStream     out = cSock.getOutputStream();
         
         ElGamalSK Params=SetupParameters(512);
         
         ObjectInputStream input;
 
-        input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\PublicKeys.txt")));
+        input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\mario\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\PublicKeys.txt")));
         ElGamalPK PK = (ElGamalPK)input.readObject();
-
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(bos);
-        oos.writeObject(scheda);
-        oos.flush();
-        byte [] schedaByte = bos.toByteArray();
-        ElGamalCT CT=Encrypt(PK,new BigInteger(schedaByte));
-        ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
-        ObjectOutputStream oos1 = new ObjectOutputStream(bos1);
-        oos1.writeObject(CT);
-        oos1.flush();
-        byte [] CTSend = bos1.toByteArray();
-        out.write(CTSend);
+        
+        ElGamalCT CT=EncryptInTheExponent(PK,new BigInteger(voto));
+        out.write(CT.C.toByteArray());
+        out.write('\n');
+        out.write(CT.C2.toByteArray());
+        out.write('\n');
         
         System.out.println("Elettore's connection ended");
     }
@@ -83,14 +77,13 @@ public class ElettoreThr {
             return;
         }
         
-        Scheda scheda = new Scheda();
-        scheda.setVoto(args[2]);
+        String voto = args[2];
         
-        SSLContext sslContext = createSSLContext(args[1]); 
+        SSLContext sslContext = createSSLContext(args[1]);
         SSLSocketFactory fact = sslContext.getSocketFactory(); 
         SSLSocket cSock = (SSLSocket)fact.createSocket("localhost", Integer.valueOf(args[0]));
 
-        votoProtocol(cSock, scheda);
+        votoProtocol(cSock, voto);
         //while (true){
         //}
     }
