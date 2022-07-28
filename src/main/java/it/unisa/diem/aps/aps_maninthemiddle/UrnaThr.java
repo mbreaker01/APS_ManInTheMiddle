@@ -104,25 +104,6 @@ public class UrnaThr {
             
         }
         
-        /*
-        ObjectOutputStream output;
-        
-        try {
-            output = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\Urna.txt", true)));
-            for(int i=0; i<len; i++){
-                BigInteger C = new BigInteger(readIntFromIn(in, '\n'));
-                BigInteger C2 = new BigInteger(readIntFromIn(in, '\n'));
-
-                ElGamalCT CT = new ElGamalCT(C,C2);
-                output.writeObject(CT);
-            }
-            output.close();
-        } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        */
         sSock.close(); // close connection
         System.out.println("session closed.");
         
