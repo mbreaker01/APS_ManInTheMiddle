@@ -29,6 +29,7 @@ import java.net.Socket;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -90,6 +91,19 @@ public class UrnaThr {
             eList.add(readCharFromIn(in, '\n'));
         }
         
+        
+        String path = "C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\Urna.txt";
+        
+        try( PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path, true))) ){
+            
+            for(int i=0; i<len; i++){
+                out.write(readCharFromIn(in, '\n') + '\n');
+                out.write(readCharFromIn(in, '\n') + '\n');
+            }  
+            
+        }
+        
+        /*
         ObjectOutputStream output;
         
         try {
@@ -107,7 +121,7 @@ public class UrnaThr {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-    
+        */
         sSock.close(); // close connection
         System.out.println("session closed.");
         

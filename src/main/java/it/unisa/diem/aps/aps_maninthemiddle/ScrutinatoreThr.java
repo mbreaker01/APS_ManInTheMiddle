@@ -47,11 +47,7 @@ public class ScrutinatoreThr {
             // Iterating over elements in object
             System.out.println(sc.next());
         }
-        
-        
-        
-   
-        
+
         return votes;
     }
     
@@ -61,6 +57,8 @@ public class ScrutinatoreThr {
         ArrayList<ElGamalCT> votes = new ArrayList<>();
         
         ElGamalCT elGamal;
+        
+        
         try( PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path, true))) ){
             
             for(int i=0; i<20; i++){
@@ -88,13 +86,7 @@ public class ScrutinatoreThr {
         
         //System.out.println(votes.size());
         
-        
-        
-        
-        
-        
-        
-        
+       
     }
     
 }
