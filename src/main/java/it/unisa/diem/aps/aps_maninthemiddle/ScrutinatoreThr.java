@@ -44,47 +44,18 @@ public class ScrutinatoreThr {
         Scanner sc = new Scanner(f);
         
          while (sc.hasNext()) {
-            // Iterating over elements in object
-            System.out.println(sc.next());
+            votes.add(new ElGamalCT(new BigInteger(sc.next()), new BigInteger(sc.next())));
+             
         }
 
         return votes;
     }
-    
-    static ArrayList<ElGamalCT> writeVotes(String path) throws Exception{
-        System.out.println("session started.");
-        
-        ArrayList<ElGamalCT> votes = new ArrayList<>();
-        
-        ElGamalCT elGamal;
-        
-        
-        try( PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path, true))) ){
-            
-            for(int i=0; i<20; i++){
-                Random randNum = new Random();
-                String c = String.valueOf(randNum.nextInt() * 1000000 );
-                String c2 = String.valueOf(randNum.nextInt() * 1000000 );
-                
-                out.write(c + '\n');
-                out.write(c2 + '\n');
-            }  
-            
-        }
-        
-        return votes;
-        
-       
-    }
-    
-    
-    
+
     public static void main(String[] args) throws Exception {
-        String path = "C:\\Users\\mario\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\Urna.txt";
-        writeVotes(path);
+        String path = "C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\Urna.txt";
         ArrayList<ElGamalCT> votes = readVotes(path);
         
-        //System.out.println(votes.size());
+        System.out.println(votes);
         
        
     }
