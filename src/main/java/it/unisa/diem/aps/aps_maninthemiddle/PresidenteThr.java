@@ -209,9 +209,7 @@ public class PresidenteThr extends SSLServer{
         BigInteger C2 = new BigInteger(c2);
 
         ElGamalCT CT = new ElGamalCT(C,C2);
-
-        System.out.println(CT.C);
-        System.out.println(CT.C2);
+      
         sslSock.close();
         return CT;
             

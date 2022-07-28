@@ -99,7 +99,8 @@ public class UrnaThr {
             for(int i=0; i<len; i++){
                 out.write(readCharFromIn(in, '\n') + '\n');
                 out.write(readCharFromIn(in, '\n') + '\n');
-            }  
+            }
+            out.close();
             
         }
         

@@ -4,6 +4,8 @@
  */
 package it.unisa.diem.aps.aps_maninthemiddle;
 
+import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.Decrypt;
+import static it.unisa.diem.aps.aps_maninthemiddle.ThresholdElGamal.PartialDecrypt;
 import static it.unisa.diem.aps.aps_maninthemiddle.UrnaThr.readCharFromIn;
 import static it.unisa.diem.aps.aps_maninthemiddle.UrnaThr.readIntFromIn;
 import java.io.BufferedInputStream;
@@ -23,6 +25,7 @@ import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -43,10 +46,12 @@ public class ScrutinatoreThr {
         File f = new File(path);
         Scanner sc = new Scanner(f);
         
-         while (sc.hasNext()) {
+        while (sc.hasNext()) {
             votes.add(new ElGamalCT(new BigInteger(sc.next()), new BigInteger(sc.next())));
              
         }
+        
+        sc.close();
 
         return votes;
     }
@@ -54,8 +59,43 @@ public class ScrutinatoreThr {
     public static void main(String[] args) throws Exception {
         String path = "C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\Urna.txt";
         ArrayList<ElGamalCT> votes = readVotes(path);
+
+        ElGamalSK []SK=new ElGamalSK[4];
+
+        ObjectInputStream input;
         
-        System.out.println(votes);
+        ArrayList<String> fileName = new ArrayList<>();
+        fileName.add("M0");
+        fileName.add("M1");
+        fileName.add("M2");
+        fileName.add("S");
+        
+        int i = 0;
+        
+        for(String s: fileName){
+            input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\" + s + "Keys.txt")));
+            SK[i] = (ElGamalSK)input.readObject();
+            i++;
+            input.close();
+        }
+        
+        HashMap<BigInteger, Integer> results = new HashMap<>();
+
+        for(ElGamalCT vote: votes){
+            //decrypt
+            for (i=0;i<3;i++){
+                vote=PartialDecrypt(vote,SK[i]);
+            }
+            BigInteger v=Decrypt(vote,SK[3]);
+            if(results.containsKey(v)){
+                results.put(v, results.get(v) + 1);
+            }
+            else{
+                results.put(v, 1);
+            }
+        }
+        
+        
         
        
     }

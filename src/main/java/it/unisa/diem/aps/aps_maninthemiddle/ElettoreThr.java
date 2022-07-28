@@ -4,9 +4,12 @@
  */
 package it.unisa.diem.aps.aps_maninthemiddle;
 
+import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.Decrypt;
 import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.Encrypt;
 import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.EncryptInTheExponent;
 import static it.unisa.diem.aps.aps_maninthemiddle.SSLClient.Protocol;
+import static it.unisa.diem.aps.aps_maninthemiddle.ScrutinatoreThr.readVotes;
+import static it.unisa.diem.aps.aps_maninthemiddle.ThresholdElGamal.PartialDecrypt;
 import static it.unisa.diem.aps.aps_maninthemiddle.ThresholdElGamal.SetupParameters;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -23,6 +26,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.util.ArrayList;
 import java.util.Arrays;
 import javax.crypto.NoSuchPaddingException;
 import javax.net.ssl.KeyManagerFactory;
@@ -62,8 +66,15 @@ public class ElettoreThr {
 
         input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\PublicKeys.txt")));
         ElGamalPK PK = (ElGamalPK)input.readObject();
+        input.close();
         
-        ElGamalCT CT=EncryptInTheExponent(PK,new BigInteger(voto));
+        BigInteger plaint = new BigInteger(voto);
+        
+        ElGamalCT CT=Encrypt(PK,plaint);
+        
+        System.out.println("cipher:");
+        System.out.println(CT.C);
+        System.out.println(CT.C2);
 
         out.write((CT.C.toString() + "\n" + CT.C2.toString() + "\n").getBytes());
         

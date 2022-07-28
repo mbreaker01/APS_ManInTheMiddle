@@ -16,10 +16,20 @@ import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import javax.crypto.NoSuchPaddingException;
 import it.unisa.diem.aps.aps_maninthemiddle.ElGamal;
+import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.Decrypt;
+import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.Encrypt;
+import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.EncryptInTheExponent;
+import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.Homomorphism;
 import static it.unisa.diem.aps.aps_maninthemiddle.ThresholdElGamal.AggregatePartialPublicKeys;
+import static it.unisa.diem.aps.aps_maninthemiddle.ThresholdElGamal.PartialDecrypt;
 import static it.unisa.diem.aps.aps_maninthemiddle.ThresholdElGamal.Setup;
 import static it.unisa.diem.aps.aps_maninthemiddle.ThresholdElGamal.SetupParameters;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.math.BigInteger;
+import java.util.ArrayList;
 
 /**
  *
@@ -30,7 +40,7 @@ public class KeysGenerator implements Serializable {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws NoSuchAlgorithmException, NoSuchPaddingException  {
+    public static void main(String[] args) throws NoSuchAlgorithmException, NoSuchPaddingException, FileNotFoundException, IOException, ClassNotFoundException  {
          ElGamalSK Params=SetupParameters(512);   
 	  ElGamalSK []SK=new ElGamalSK[4];
          for (int i=0;i<4;i++) { 
@@ -59,8 +69,8 @@ public class KeysGenerator implements Serializable {
             ex.printStackTrace();
         }
         try {
-            ElGamalPK []PartialPK=new ElGamalPK[3];
-            for (int i=0;i<3;i++) 	
+            ElGamalPK []PartialPK=new ElGamalPK[4];
+            for (int i=0;i<4;i++) 	
             PartialPK[i]=SK[i].PK;
             output = new ObjectOutputStream(new BufferedOutputStream(new FileOutputStream("C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\PublicKeys.txt")));
             ElGamalPK PK=AggregatePartialPublicKeys(PartialPK);
@@ -72,9 +82,6 @@ public class KeysGenerator implements Serializable {
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-        
-        
-        
-       
+
     }   
 }
