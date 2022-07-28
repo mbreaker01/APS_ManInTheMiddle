@@ -4,6 +4,8 @@
  */
 package it.unisa.diem.aps.aps_maninthemiddle;
 
+import java.math.BigInteger;
+
 /**
  *
  * @author mario
@@ -20,6 +22,14 @@ public class Utils {
         }
         
         return bytes;
+    }
+    
+    public static void ZKPonVoteChain(ElGamalCT CT, BigInteger plain){
+        
+    }
+    
+    public static void ZKPonVoteChain(ElGamalCT CT, ElGamalCT CTH){
+        
     }
     
     

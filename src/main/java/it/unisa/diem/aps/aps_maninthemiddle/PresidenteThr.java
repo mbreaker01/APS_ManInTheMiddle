@@ -62,41 +62,6 @@ public class PresidenteThr extends SSLServer{
         return sslContext;
     }    
     
-    static void clientProtocol(Socket cSock, String msg) throws Exception{
-        OutputStream     out = cSock.getOutputStream();
-        InputStream      in = cSock.getInputStream();
-        out.write(Utils.toByteArray(msg));
-        
-        System.out.println("Presidente's connection ended");
-    }
-    
-    static String serverProtocol(Socket sSock, String certName) throws Exception{
-        System.out.println("session started.");
-        
-        InputStream in = sSock.getInputStream();
-        OutputStream out = sSock.getOutputStream();
-        
-        int ch = 0;
-        int i = 0;
-        char[] msg = new char[20];
-        while ((ch = in.read()) != '\n'){
-            System.out.print((char)ch);
-            msg[i] = (char)ch;
-            i++;
-            TimeUnit.SECONDS.sleep(1);
-            }
-        msg[i]='\n';
-        System.out.println((char)ch);
-        sSock.close(); // close connection
-        System.out.println("session closed.");
-        
-        
-        return String.valueOf(msg);
-        
-    }
-    
-
-
     public static void main(String[] args) throws Exception{
         if(args.length != 2){
             System.err.println("Numero di parametri errato");
@@ -131,7 +96,7 @@ public class PresidenteThr extends SSLServer{
                 CT= elettoreProtocol(sslSock, certName);
                 pending.add(certName);
                 CTList.add(CT);
-                if(pending.size()>0){
+                if(pending.size()>4){
                     SSLContext sslContext = createSSLContext(); 
                     SSLSocketFactory fact1 = sslContext.getSocketFactory(); 
                     SSLSocket cSock = (SSLSocket)fact1.createSocket("localhost", Integer.valueOf(args[1]));

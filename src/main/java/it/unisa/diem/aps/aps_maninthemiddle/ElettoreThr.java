@@ -71,10 +71,6 @@ public class ElettoreThr {
         BigInteger plaint = new BigInteger(voto);
         
         ElGamalCT CT=Encrypt(PK,plaint);
-        
-        System.out.println("cipher:");
-        System.out.println(CT.C);
-        System.out.println(CT.C2);
 
         out.write((CT.C.toString() + "\n" + CT.C2.toString() + "\n").getBytes());
         
