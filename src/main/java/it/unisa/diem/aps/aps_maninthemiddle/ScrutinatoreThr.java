@@ -8,7 +8,7 @@ import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.Decrypt;
 import static it.unisa.diem.aps.aps_maninthemiddle.ThresholdElGamal.PartialDecrypt;
 import static it.unisa.diem.aps.aps_maninthemiddle.UrnaThr.readCharFromIn;
 import static it.unisa.diem.aps.aps_maninthemiddle.UrnaThr.readIntFromIn;
-import static it.unisa.diem.aps.aps_maninthemiddle.Utils.ZKPonVoteChain;
+import static it.unisa.diem.aps.aps_maninthemiddle.Utils.ZKP;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedWriter;
@@ -89,7 +89,7 @@ public class ScrutinatoreThr {
                 vote=PartialDecrypt(vote,SK[i]);
             }
             BigInteger v=Decrypt(vote,SK[3]);
-            ZKPonVoteChain(initialCT, v);
+            ZKP(initialCT, v);
             if(results.containsKey(v)){
                 results.put(v, results.get(v) + 1);
             }

@@ -8,7 +8,7 @@ import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.EncryptInTheExponent;
 import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.Homomorphism;
 import static it.unisa.diem.aps.aps_maninthemiddle.PresidenteThr.createSSLContext;
 import static it.unisa.diem.aps.aps_maninthemiddle.ThresholdElGamal.SetupParameters;
-import static it.unisa.diem.aps.aps_maninthemiddle.Utils.ZKPonVoteChain;
+import static it.unisa.diem.aps.aps_maninthemiddle.Utils.ZKP;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -119,7 +119,7 @@ public class MixerThr {
             ElGamalCT CT1=EncryptInTheExponent(PK,M1);
             ElGamalCT CTH=Homomorphism(PK,CT1,CT);
             
-            ZKPonVoteChain(CT, CTH);
+            ZKP(CT, CTH);
             
             CTList.add(CTH);
         }

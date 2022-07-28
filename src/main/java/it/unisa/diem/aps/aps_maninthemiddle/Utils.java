@@ -24,13 +24,12 @@ public class Utils {
         return bytes;
     }
     
-    public static void ZKPonVoteChain(ElGamalCT CT, BigInteger plain){
+    public static void ZKP(ElGamalCT CT, BigInteger plain){
         
     }
     
-    public static void ZKPonVoteChain(ElGamalCT CT, ElGamalCT CTH){
+    public static void ZKP(ElGamalCT CT, ElGamalCT CTH){
         
     }
-    
     
 }
