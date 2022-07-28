@@ -69,13 +69,11 @@ public class MixerThr {
         try( PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path, true))) ){
             
             out.write("---------------------------------- BLOCK START ----------------------------------\n");
-            out.write("INPUTS:\n");
             for(ElGamalCT in: inputs){
-                out.write( "\t" + in.C.toString() + " - " + in.C2.toString() + "\n");
+                out.write("CT di input:\n" + in.C.toString() + "\n" + in.C2.toString() + "\n");
             }
-            out.write("OUTPUTS:\n");
             for(ElGamalCT in: CTList){
-                out.write( "\t" + in.C.toString() + " - " + in.C2.toString() + "\n");
+                out.write("CT di output:\n" + in.C.toString() + "\n" + in.C2.toString() + "\n");
             }
             out.write("---------------------------------- BLOCK END ----------------------------------\n");
             out.close();
@@ -84,11 +82,9 @@ public class MixerThr {
         
     }
 
-    
-    
-    
+
     static void clientProtocol(Socket cSock) throws Exception{
-        String path = "C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\Votechain.txt";
+        String path = "C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\VoteChain.txt";
         writeOnVoteChain(path);
         
         OutputStream     out = cSock.getOutputStream();

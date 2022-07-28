@@ -56,6 +56,24 @@ public class ScrutinatoreThr {
 
         return votes;
     }
+    
+    static void writeOnVoteChain(String path, HashMap<BigInteger, Integer> results, ArrayList<ElGamalCT> votes) throws IOException{
+        
+        try( PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path, true))) ){
+            
+            out.write("---------------------------------- BLOCK START ----------------------------------\n");
+            for(ElGamalCT in: votes){
+                out.write( "CT ricevuto:\n" + in.C.toString() + "\n" + in.C2.toString() + "\n");
+            }
+            for(HashMap.Entry<BigInteger, Integer> set: results.entrySet()){
+                out.write( "Lista: " + set.getKey().toString() + " - Voti: " + set.getValue().toString() + "\n");
+            }
+            out.write("---------------------------------- BLOCK END ----------------------------------\n");
+            out.close();
+            
+        }
+        
+    }
 
     public static void main(String[] args) throws Exception {
         String path = "C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\Urna.txt";
@@ -98,6 +116,9 @@ public class ScrutinatoreThr {
             }
             
         }
+        
+        String path2 = "C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\VoteChain.txt";
+        writeOnVoteChain(path2, results, votes);
         
     }
     
