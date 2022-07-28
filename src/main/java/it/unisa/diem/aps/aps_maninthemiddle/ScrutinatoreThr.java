@@ -4,22 +4,27 @@
  */
 package it.unisa.diem.aps.aps_maninthemiddle;
 
-import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.Decrypt;
-import static it.unisa.diem.aps.aps_maninthemiddle.ThresholdElGamal.PartialDecrypt;
 import static it.unisa.diem.aps.aps_maninthemiddle.UrnaThr.readCharFromIn;
 import static it.unisa.diem.aps.aps_maninthemiddle.UrnaThr.readIntFromIn;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedWriter;
+import java.io.EOFException;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.Scanner;
 
 /**
  *
@@ -35,56 +40,60 @@ public class ScrutinatoreThr {
         
         ArrayList<ElGamalCT> votes = new ArrayList<>();
         
-        ElGamalCT elGamal;
+        File f = new File(path);
+        Scanner sc = new Scanner(f);
         
-        ObjectInputStream input;
-        
-        try {
-            input = new ObjectInputStream(new BufferedInputStream(new FileInputStream(path)));
-            
-            while((elGamal = (ElGamalCT) input.readObject()) != null){
-                votes.add(elGamal);
-            }
-        } catch (FileNotFoundException ex) {
-            ex.printStackTrace();
-        } catch (IOException ex) {
-            ex.printStackTrace();
+         while (sc.hasNext()) {
+            // Iterating over elements in object
+            System.out.println(sc.next());
         }
+        
+        
+        
    
         
         return votes;
     }
     
+    static ArrayList<ElGamalCT> writeVotes(String path) throws Exception{
+        System.out.println("session started.");
+        
+        ArrayList<ElGamalCT> votes = new ArrayList<>();
+        
+        ElGamalCT elGamal;
+        try( PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path, true))) ){
+            
+            for(int i=0; i<20; i++){
+                Random randNum = new Random();
+                String c = String.valueOf(randNum.nextInt() * 1000000 );
+                String c2 = String.valueOf(randNum.nextInt() * 1000000 );
+                
+                out.write(c + '\n');
+                out.write(c2 + '\n');
+            }  
+            
+        }
+        
+        return votes;
+        
+       
+    }
+    
+    
     
     public static void main(String[] args) throws Exception {
-        String path = "C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\Urna.txt";
+        String path = "C:\\Users\\mario\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\Urna.txt";
+        writeVotes(path);
         ArrayList<ElGamalCT> votes = readVotes(path);
         
-        ElGamalSK []SK=new ElGamalSK[4];
+        //System.out.println(votes.size());
         
-        ObjectInputStream input;
-
-        input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\M0Keys.txt")));
-        SK[0] = (ElGamalSK)input.readObject();
         
-        input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\M1Keys.txt")));
-        SK[1] = (ElGamalSK)input.readObject();
         
-        input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\M2Keys.txt")));
-        SK[2] = (ElGamalSK)input.readObject();
         
-        input = new ObjectInputStream(new BufferedInputStream(new FileInputStream("C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\SKeys.txt")));
-        SK[3] = (ElGamalSK)input.readObject();
         
-        for(ElGamalCT vote: votes){
-            //decrypt
-            for (int i=0;i<3;i++){
-                vote=PartialDecrypt(vote,SK[i]);
-                i++;
-            }
-            BigInteger res=Decrypt(vote,SK[3]);
-            System.out.println(res);
-        }
+        
+        
         
     }
     
