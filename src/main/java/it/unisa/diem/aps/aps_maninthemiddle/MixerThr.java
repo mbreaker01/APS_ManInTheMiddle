@@ -8,16 +8,20 @@ import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.EncryptInTheExponent;
 import static it.unisa.diem.aps.aps_maninthemiddle.ElGamal.Homomorphism;
 import static it.unisa.diem.aps.aps_maninthemiddle.PresidenteThr.createSSLContext;
 import static it.unisa.diem.aps.aps_maninthemiddle.ThresholdElGamal.SetupParameters;
+import static it.unisa.diem.aps.aps_maninthemiddle.UrnaThr.readCharFromIn;
 import static it.unisa.diem.aps.aps_maninthemiddle.Utils.ZKP;
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.math.BigInteger;
 import java.net.Socket;
 import java.security.KeyStore;
@@ -39,6 +43,7 @@ public class MixerThr {
     
     private static ArrayList<String> eList;
     private static ArrayList<ElGamalCT> CTList;
+    private static ArrayList<ElGamalCT> inputs;
 
 
     
@@ -57,9 +62,35 @@ public class MixerThr {
         sslContext.init(keyFact.getKeyManagers(), null, null);
 		
         return sslContext;
-    }    
+    }
+    
+    static void writeOnVoteChain(String path) throws IOException{
+        
+        try( PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(path, true))) ){
+            
+            out.write("---------------------------------- BLOCK START ----------------------------------\n");
+            out.write("INPUTS:\n");
+            for(ElGamalCT in: inputs){
+                out.write( "\t" + in.C.toString() + " - " + in.C2.toString() + "\n");
+            }
+            out.write("OUTPUTS:\n");
+            for(ElGamalCT in: CTList){
+                out.write( "\t" + in.C.toString() + " - " + in.C2.toString() + "\n");
+            }
+            out.write("---------------------------------- BLOCK END ----------------------------------\n");
+            out.close();
+            
+        }
+        
+    }
+
+    
+    
     
     static void clientProtocol(Socket cSock) throws Exception{
+        String path = "C:\\Users\\giuseppe\\Documents\\NetBeansProjects\\APS_ManInTheMiddle\\src\\main\\java\\Votechain.txt";
+        writeOnVoteChain(path);
+        
         OutputStream     out = cSock.getOutputStream();
         String output=eList.size() + "\n";
         for(String el: eList){
@@ -115,6 +146,8 @@ public class MixerThr {
             
             ElGamalCT CT = new ElGamalCT(C,C2);
             
+            CTList.add(CT);
+            
             BigInteger M1=new BigInteger("0");
             ElGamalCT CT1=EncryptInTheExponent(PK,M1);
             ElGamalCT CTH=Homomorphism(PK,CT1,CT);
@@ -139,6 +172,7 @@ public class MixerThr {
         
         eList = new ArrayList<String>();
         CTList = new ArrayList<ElGamalCT>();
+        inputs = new ArrayList<ElGamalCT>();
         
      	SSLServerSocketFactory fact = (SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
         SSLServerSocket  sSock = (SSLServerSocket)fact.createServerSocket(Integer.valueOf(args[0]));
